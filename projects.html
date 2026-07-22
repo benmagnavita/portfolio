@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projects — Ben Magnavita</title>
+<meta name="description" content="Security projects by Ben Magnavita — Azure SIEM honeypot lab with Microsoft Sentinel, and more in progress.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="topbar-inner">
+    <span class="session">[ben@sec-portfolio]</span>
+    <a class="tab" href="index.html">0:resume</a>
+    <a class="tab active" href="projects.html">1:projects</a>
+    <span class="clock" id="clock"></span>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <section class="section" style="margin-top:48px;">
+    <div class="sec-cmd"><span class="prompt">ben@raleigh:<span class="path">~/projects</span>$</span> <span class="cmd">ls -la --sort=newest</span></div>
+
+    <div class="cards">
+
+      <!-- ================= PROJECT: HOME SIEM LAB ================= -->
+      <a class="card" href="siem-lab.html">
+        <img class="card-thumb" src="assets/img/05-dashboard.png" alt="Global attack map built in Microsoft Sentinel showing live attacker origins">
+        <div class="card-body">
+          <div class="card-status">[ COMPLETE ]</div>
+          <h3>Home SIEM Lab — Azure Honeypot</h3>
+          <p>Deployed an intentionally exposed Windows VM in Azure, wired it into Microsoft Sentinel, and visualized 1M+ live attack events on a custom geo-IP attack map.</p>
+          <div class="stack">
+            <span>Azure</span><span>Microsoft Sentinel</span><span>KQL</span><span>Log Analytics</span><span>Watchlists</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- ================= PLACEHOLDER: NEXT PROJECT =================
+           TO ADD A NEW PROJECT:
+           1. Copy the <a class="card"> block above.
+           2. Point href at your new project page (copy siem-lab.html as a starting template).
+           3. Drop a thumbnail into assets/img/ and update the src + alt text.
+           4. Update the status, title, description, and stack tags.
+           5. Delete or keep this placeholder card below.
+           ============================================================= -->
+      <div class="card placeholder">
+        <div class="card-thumb-empty">// awaiting deployment</div>
+        <div class="card-body">
+          <div class="card-status queued">[ QUEUED ]</div>
+          <h3>Next Project</h3>
+          <p>Currently in the works. Check back soon.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <span>&copy; 2026 Ben Magnavita</span>
+    <span><a href="mailto:Ben.magnavita@gmail.com">Ben.magnavita@gmail.com</a></span>
+    <span><a href="https://linkedin.com/in/benmagnavita" target="_blank" rel="noopener">LinkedIn</a></span>
+  </footer>
+
+</div>
+
+<script>
+  function tick() {
+    const d = new Date();
+    document.getElementById('clock').textContent =
+      d.toLocaleDateString('en-US', {month:'short', day:'2-digit'}) + ' ' +
+      d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', hour12:false});
+  }
+  tick(); setInterval(tick, 30000);
+</script>
+
+</body>
+</html>

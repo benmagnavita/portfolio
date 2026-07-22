@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home SIEM Lab — Azure Honeypot | Ben Magnavita</title>
+<meta name="description" content="Step-by-step build of a cloud honeypot SIEM lab: Azure VM, Microsoft Sentinel, custom data collection, geo-IP enrichment, and a live attack map.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="topbar-inner">
+    <span class="session">[ben@sec-portfolio]</span>
+    <a class="tab" href="index.html">0:resume</a>
+    <a class="tab active" href="projects.html">1:projects</a>
+    <span class="clock" id="clock"></span>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- ============ PROJECT HEADER ============ -->
+  <div class="term" style="margin-top:48px;">
+    <div class="term-head">
+      <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+      <span class="title">ben@raleigh: ~/projects/siem-lab</span>
+    </div>
+    <div class="term-body">
+      <div class="line"><span class="prompt">ben@raleigh:~/projects/siem-lab$</span> <span class="cmd">cat README.md</span></div>
+      <div class="hero-name" style="font-size:clamp(22px,4vw,32px);">Home SIEM Lab — Azure Honeypot</div>
+      <div class="line out" style="margin-top:8px; max-width:75ch;">
+        A cloud-based SIEM lab built in Azure: an intentionally exposed Windows VM acts as a honeypot,
+        Microsoft Sentinel ingests its security event logs through a custom Data Collection Rule, and a
+        geo-IP watchlist powers a live world map of attacker activity — over 1 million malicious events
+        captured and visualized.
+      </div>
+      <div class="line" style="margin-top:12px;">
+        <span class="out">stack:</span> <span class="cmd">Azure &middot; Microsoft Sentinel &middot; Log Analytics &middot; KQL &middot; Watchlists &middot; Workbooks</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ WALKTHROUGH ============ -->
+  <section class="section">
+    <div class="sec-cmd"><span class="prompt">ben@raleigh:<span class="path">~/projects/siem-lab</span>$</span> <span class="cmd">./walkthrough.sh</span></div>
+
+    <!-- STEP 1 -->
+    <div class="step">
+      <div class="step-label">STEP 1/7 — BUILD THE ENVIRONMENT</div>
+      <h3>Deploy the Resource Group</h3>
+      <p>Provisioned a dedicated Azure Resource Group (<strong>Bens-SOC-LAB</strong>) containing every component of the lab: a Windows virtual machine, public IP, network security group, virtual network, Log Analytics workspace, and the Sentinel solution — all deployed to East US 2.</p>
+      <div class="shot">
+        <img src="assets/img/01-resource-group.png" alt="Azure portal showing the Bens-SOC-LAB resource group with VM, NSG, VNet, Log Analytics workspace, and Sentinel resources">
+        <div class="cap">Bens-SOC-LAB resource group — all lab infrastructure in one place.</div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step">
+      <div class="step-label">STEP 2/7 — OPEN THE HONEYPOT</div>
+      <h3>Expose the VM with a Permissive NSG Rule</h3>
+      <p>Created a custom inbound rule on the network security group — <span class="note-red">DANGER_AllowAnyCustomAnyInbound</span> — allowing any source, any port, any protocol at priority 100. This intentionally removes the perimeter so the VM attracts real-world scanning and brute-force traffic from the internet.</p>
+      <div class="callout">
+        <span class="tag">[!] DELIBERATELY INSECURE:</span> This configuration is the opposite of production practice — that's the point. The VM is a sacrificial honeypot, isolated in its own resource group, whose only job is to get attacked and generate telemetry.
+      </div>
+      <div class="shot">
+        <img src="assets/img/02-nsg-rule.png" alt="Custom NSG inbound rule allowing any source, any port, any protocol">
+        <div class="cap">The all-inbound NSG rule that turns the VM into a honeypot.</div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step">
+      <div class="step-label">STEP 3/7 — WIRE UP LOG COLLECTION</div>
+      <h3>Connect Sentinel with a Data Collection Rule</h3>
+      <p>Configured the <strong>Windows Security Events via AMA</strong> data connector in Microsoft Sentinel with a custom Data Collection Rule (DCR-Windows, AllEvents filter) to stream the VM's security event logs into the Log Analytics workspace. Ingestion ramped quickly — 126K+ security events collected within the first week.</p>
+      <div class="shot">
+        <img src="assets/img/03-data-collection.png" alt="Windows Security Events via AMA connector in Sentinel showing connected status and 126K security events ingested">
+        <div class="cap">AMA connector live: DCR-Windows streaming all security events into Sentinel.</div>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step">
+      <div class="step-label">STEP 4/7 — ENRICH THE DATA</div>
+      <h3>Import a Geo-IP Watchlist</h3>
+      <p>Loaded a 55,000-item geo-IP watchlist into Sentinel from a remote file. This maps attacker IP addresses to latitude, longitude, city, and country — the enrichment layer that makes attack-origin analysis and mapping possible in KQL.</p>
+      <div class="shot">
+        <img src="assets/img/04-watchlist.png" alt="Sentinel watchlists page showing the geoip watchlist with 55K items">
+        <div class="cap">The geoip watchlist: 55K CIDR-to-location records for attacker enrichment.</div>
+      </div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="step">
+      <div class="step-label">STEP 5/7 — VISUALIZE THE ATTACKS</div>
+      <h3>Build the Attack Map Dashboard</h3>
+      <p>Wrote a custom KQL query joining failed logon events against the geo-IP watchlist, then rendered it in a Sentinel Workbook as a world map. Every dot is a real attacker location; the leaderboard below the map ranks origins by volume — topped by 1.14M failed attempts from a single location in Japan.</p>
+      <div class="shot">
+        <img src="assets/img/05-dashboard.png" alt="Sentinel workbook world map showing attacker locations across the globe with a leaderboard of top attack origins">
+        <div class="cap">Live attack map: global brute-force activity against the honeypot, ranked by origin.</div>
+      </div>
+    </div>
+
+    <!-- STEP 6 -->
+    <div class="step">
+      <div class="step-label">STEP 6/7 — INSPECT THE DATA MODEL</div>
+      <h3>Drill Into the Enriched Log Format</h3>
+      <p>Each map point resolves to structured, enriched fields: attacker IP, coordinates, city, country, and a friendly location label — the output of the KQL join between raw security events and the watchlist.</p>
+      <div class="shot">
+        <img src="assets/img/06-log-format.png" alt="Map tooltip showing enriched log fields: attacker IP, latitude, longitude, city, and country for a location in Japan">
+        <div class="cap">Enriched record structure: AttackerIp mapped to precise geo coordinates.</div>
+      </div>
+    </div>
+
+    <!-- STEP 7 -->
+    <div class="step">
+      <div class="step-label">STEP 7/7 — ANALYZE A REAL ATTACKER</div>
+      <h3>Trace an Individual Attack Source</h3>
+      <p>Zooming into a single source: one Phoenix-based IP generated 295 failed logon attempts against the honeypot. The map resolves down to street level, demonstrating the full pipeline — raw Windows event &rarr; Sentinel ingestion &rarr; watchlist enrichment &rarr; actionable, geolocated intelligence.</p>
+      <div class="shot">
+        <img src="assets/img/07-log-example.png" alt="Street-level map view of a single attacker in Phoenix with 295 failed logon attempts">
+        <div class="cap">Single-source analysis: 295 brute-force failures traced to one IP.</div>
+      </div>
+    </div>
+
+  </section>
+
+  <a class="backlink" href="projects.html">&larr; cd ../projects</a>
+
+  <footer>
+    <span>&copy; 2026 Ben Magnavita</span>
+    <span><a href="mailto:Ben.magnavita@gmail.com">Ben.magnavita@gmail.com</a></span>
+    <span><a href="https://linkedin.com/in/benmagnavita" target="_blank" rel="noopener">LinkedIn</a></span>
+  </footer>
+
+</div>
+
+<script>
+  function tick() {
+    const d = new Date();
+    document.getElementById('clock').textContent =
+      d.toLocaleDateString('en-US', {month:'short', day:'2-digit'}) + ' ' +
+      d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', hour12:false});
+  }
+  tick(); setInterval(tick, 30000);
+</script>
+
+</body>
+</html>
