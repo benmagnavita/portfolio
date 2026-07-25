@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Threat Intelligence Configuration — Azure Integration | Ben Magnavita</title>
+<meta name="description" content="Deploying a MISP threat intelligence platform in Docker on Ubuntu and integrating it with Microsoft Sentinel via an Azure Function App.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="topbar-inner">
+    <span class="session">[ben@sec-portfolio]</span>
+    <a class="tab" href="index.html">0:resume</a>
+    <a class="tab active" href="projects.html">1:projects</a>
+    <span class="clock" id="clock"></span>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- ============ PROJECT HEADER ============ -->
+  <div class="term" style="margin-top:48px;">
+    <div class="term-head">
+      <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+      <span class="title">ben@raleigh: ~/projects/threat-intel</span>
+    </div>
+    <div class="term-body">
+      <div class="line"><span class="prompt">ben@raleigh:~/projects/threat-intel$</span> <span class="cmd">cat README.md</span></div>
+      <div class="hero-name" style="font-size:clamp(22px,4vw,32px);">Threat Intelligence Configuration — Azure Integration</div>
+      <div class="line out" style="margin-top:8px; max-width:75ch;">
+        Deployed a MISP threat intelligence platform in Docker on an Ubuntu server in Azure, loaded it with
+        community indicator feeds, and integrated it with Microsoft Sentinel through an app registration and
+        a timer-triggered Azure Function — an automated pipeline now feeding <strong>241K threat intel
+        indicators</strong> into the same SIEM workspace built in the <a href="siem-lab.html">Home SIEM Lab</a> project.
+      </div>
+      <div class="line" style="margin-top:12px;">
+        <span class="out">stack:</span> <span class="cmd">Azure &middot; Ubuntu Server &middot; Docker &middot; MISP &middot; Microsoft Sentinel &middot; Azure Functions &middot; Entra ID &middot; VS Code &middot; Python</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ WALKTHROUGH ============ -->
+  <section class="section">
+    <div class="sec-cmd"><span class="prompt">ben@raleigh:<span class="path">~/projects/threat-intel</span>$</span> <span class="cmd">./walkthrough.sh --phase all</span></div>
+
+    <!-- ==================== PHASE 1 ==================== -->
+    <p style="color:var(--amber); font-size:13px; letter-spacing:2px; margin:10px 0 26px;">// PHASE 1 — DEPLOY THE MISP PLATFORM</p>
+
+    <div class="step">
+      <div class="step-label">STEP 1/23 — CONTAINER RUNTIME</div>
+      <h3>Install Docker on the Ubuntu Server</h3>
+      <p>Provisioned an Ubuntu VM in Azure (MagnaMISP) and installed Docker Engine, verifying the installation with the hello-world container to confirm the daemon, image pulls, and container execution were all working.</p>
+      <div class="shot">
+        <img src="assets/img/ti-01-docker-install.png" alt="Terminal output of docker run hello-world confirming a working Docker installation on Ubuntu">
+        <div class="cap">Docker verified on the MagnaMISP Ubuntu server.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-label">STEP 2/23 — GET MISP</div>
+      <h3>Clone the misp-docker Repository</h3>
+      <p>Pulled the official MISP Docker project onto the server. Running MISP in containers keeps the full stack — web app, database, workers — reproducible and easy to rebuild.</p>
+      <div class="shot">
+        <img src="assets/img/ti-02-clone-misp.png" alt="git clone of the MISP docker repository completing successfully">
+        <div class="cap">misp-docker cloned to the server.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-label">STEP 3/23 — CONFIGURE</div>
+      <h3>Point MISP at the Server's Public IP</h3>
+      <p>Edited the environment file in nano to set <strong>BASE_URL</strong> to the VM's public HTTPS address so MISP generates correct links and accepts requests at the address it's actually served from.</p>
+      <div class="shot">
+        <img src="assets/img/ti-03-env-config.png" alt="Editing the .env file in nano to update the BASE_URL to the public IP over HTTPS">
+        <div class="cap">BASE_URL updated in the .env before bringing the stack up.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-label">STEP 4/23 — OPEN THE DOOR</div>
+      <h3>Allow HTTPS Inbound on the NSG</h3>
+      <p>Added a custom inbound rule (<strong>AllowAnyCustom443Inbound</strong>, priority 310) to the VM's network security group so the MISP web interface is reachable over port 443.</p>
+      <div class="shot">
+        <img src="assets/img/ti-04-nsg-443.png" alt="Azure NSG inbound port rules showing SSH on 22 and a custom rule allowing 443">
+        <div class="cap">Inbound 443 opened for the MISP web UI.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-label">STEP 5/23 — FIRST CONTACT</div>
+      <h3>MISP Live over HTTPS</h3>
+      <p>Browsed to the server's public address and confirmed the MISP login page rendering over HTTPS — the containerized stack is up and serving. (The browser's "Not secure" flag is expected here: the lab uses MISP's self-signed certificate rather than a CA-issued one.)</p>
+      <div class="shot">
+        <img src="assets/img/ti-05-misp-live.png" alt="MISP Threat Sharing login page loaded in a browser over HTTPS">
+        <div class="cap">MISP reachable from the browser — deployment confirmed.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-label">STEP 6/23 — INTO THE CONSOLE</div>
+      <h3>Log In and Verify the GUI</h3>
+      <p>Authenticated with the initial default admin credentials and landed in a clean MISP events console — zero events, ready to be populated with intel feeds.</p>
+      <div class="shot">
+        <img src="assets/img/ti-06-misp-gui.png" alt="MISP events list page after first login showing an empty instance">
+        <div class="cap">Fresh MISP instance — the events table starts empty.</div>
+      </div>
+    </div>
+
+    <!-- ==================== PHASE 2 ==================== -->
+    <p style="color:var(--amber); font-size:13px; letter-spacing:2px; margin:40px 0 26px;">// PHASE 2 — LOAD THREAT INTEL FEEDS</p>
+
+    <div class="step">
+      <div class="step-label">STEP 7/23 — SOURCE THE FEEDS</div>
+      <h3>Pull Feed Definitions from the MISP Project</h3>
+      <p>Grabbed the community feed metadata (defaults.json) from the official MISP repository — a curated set of open-source indicator feeds including IP blocklists and other OSINT sources, ready to import as JSON.</p>
+      <div class="shot">
+        <img src="assets/img/ti-07-feed-metadata.png" alt="MISP GitHub repository showing the feed-metadata defaults.json file with feed definitions selected">
+        <div class="cap">Community feed definitions from the MISP project's feed-metadata.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-label">STEP 8/23 — INGEST</div>
+      <h3>Import the Feeds into MISP</h3>
+      <p>Pasted the feed JSON into MISP's "Import Feeds from JSON" tool, registering sources like the ELLIO community IP feed. Once enabled and cached, these feeds continuously populate MISP with fresh indicators of compromise.</p>
+      <div class="shot">
+        <img src="assets/img/ti-08-import-feeds.png" alt="MISP paste feed data screen with feed JSON ready to be added">
+        <div class="cap">Feed definitions imported — MISP now has live indicator sources.</div>
+      </div>
+    </div>
+
+    <!-- ==================== PHASE 3 ==================== -->
+    <p style="color:var(--amber); font-size:13px; letter-spacing:2px; margin:40px 0 26px;">// PHASE 3 — BRIDGE MISP TO SENTINEL</p>
+
+    <div class="step">
+      <div class="step-label">STEP 9/23 — THE CONNECTOR</div>
+      <h3>Install MISP2Sentinel from Content Hub</h3>
+      <p>Installed the community <strong>MISP2Sentinel</strong> solution from the Microsoft Sentinel Content Hub — the data connector that lets Sentinel receive threat intelligence indicators pushed from a MISP instance via API.</p>
+      <div class="shot">
+        <img src="assets/img/ti-09-connector.png" alt="Microsoft Sentinel Content Hub with the MISP2Sentinel solution selected for install">
+        <div class="cap">MISP2Sentinel solution selected in the Sentinel Content Hub.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-label">STEP 10/23 — IDENTITY FOR THE PIPELINE</div>
+      <h3>Register an Entra ID Application</h3>
+      <p>Created a single-tenant app registration (<strong>MagnaMISPtoSentinel</strong>) in Entra ID. This service principal is the identity the integration uses to authenticate to Microsoft's APIs — no user credentials involved in the pipeline.</p>
+      <div class="shot">
+        <img src="assets/img/ti-10-app-registration.png" alt="Entra ID register an application screen for MagnaMISPtoSentinel, single tenant">
+        <div class="cap">App registration: the service identity for the MISP-to-Sentinel push.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-label">STEP 11/23 — CREDENTIALS</div>
+      <h3>Issue a Client Secret</h3>
+      <p>Generated a client secret for the app registration with a 180-day expiry — the credential the Azure Function presents alongside the app's client ID when requesting tokens.</p>
+      <div class="shot">
+        <img src="assets/img/ti-11-client-secret.png" alt="Adding a client secret to the MagnaMISPtoSentinel app registration">
+        <div class="cap">Client secret issued (value redacted — shown only once at creation).</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-label">STEP 12/23 — LEAST-PRIVILEGE ACCESS</div>
+      <h3>Grant Sentinel Contributor on the Workspace</h3>
+      <p>Assigned the <strong>Microsoft Sentinel Contributor</strong> role to the MagnaMISPtoSentinel application, scoped to the Log Analytics workspace — exactly the access the integration needs to write threat intel indicators, and nothing broader.</p>
+      <div class="shot">
+        <img src="assets/img/ti-12-role-assignment.png" alt="Azure role assignment adding the MagnaMISPtoSentinel application to the Microsoft Sentinel Contributor role on the workspace">
+        <div class="cap">Role assignment scoped to the workspace, not the subscription.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-label">STEP 13/23 — THE OTHER HALF OF AUTH</div>
+      <h3>Generate a MISP Auth Key</h3>
+      <p>Created an API authentication key in MISP for the integration to pull indicators from the MISP server. With the Entra app credentials and this key, the pipeline can authenticate to both ends: read from MISP, write to Sentinel.</p>
+      <div class="shot">
+        <img src="assets/img/ti-13-auth-key.png" alt="MISP auth key created dialog with the key value redacted">
+        <div class="cap">MISP API key generated (redacted — MISP displays it exactly once).</div>
+      </div>
+    </div>
+
+    <!-- ==================== PHASE 4 ==================== -->
+    <p style="color:var(--amber); font-size:13px; letter-spacing:2px; margin:40px 0 26px;">// PHASE 4 — AUTOMATE WITH AN AZURE FUNCTION</p>
+
+    <div class="step">
+      <div class="step-label">STEP 14/23 — SERVERLESS HOST</div>
+      <h3>Create the Function App</h3>
+      <p>Stood up a Linux Function App (<strong>MagnaMISPtoSentinel</strong>) in the MagnaMISP resource group — the serverless host that will run the sync job on a schedule, with no VM to maintain for the automation layer.</p>
+      <div class="shot">
+        <img src="assets/img/ti-14-create-function-app.png" alt="Azure Create Function App form with the MagnaMISPtoSentinel app name in the MagnaMISP resource group on Linux">
+        <div class="cap">Function App basics: code deployment on Linux.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-label">STEP 15/23 — INFRASTRUCTURE READY</div>
+      <h3>Function App Resources Deployed</h3>
+      <p>Azure provisioned the supporting resources — App Service plan, storage account, and Application Insights for monitoring — all green in the deployment details.</p>
+      <div class="shot">
+        <img src="assets/img/ti-15-app-deployed.png" alt="Azure deployment overview showing the Function App resources provisioning successfully">
+        <div class="cap">Every component of the Function App deployment reporting OK.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-label">STEP 16/23 — GET THE CODE</div>
+      <h3>Download the misp2sentinel Repository</h3>
+      <p>Pulled the community misp2sentinel project — the Python codebase containing the Azure Function that queries MISP for indicators and upserts them into Sentinel through Microsoft's threat intelligence API.</p>
+      <div class="shot">
+        <img src="assets/img/ti-16-download-repo.png" alt="GitHub misp2sentinel repository with the Download ZIP option highlighted">
+        <div class="cap">misp2sentinel source — the sync engine for the pipeline.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-label">STEP 17/23 — INTO THE EDITOR</div>
+      <h3>Open the Project in VS Code</h3>
+      <p>Opened the repo in VS Code to review the structure and configure the function — the AzureFunction directory holds the deployable code, with config defaults to update for the MISP URL, app credentials, and workspace targets.</p>
+      <div class="shot">
+        <img src="assets/img/ti-17-vscode.png" alt="VS Code explorer showing the misp2sentinel project structure including the AzureFunction directory">
+        <div class="cap">Project structure in VS Code — AzureFunction is what ships to Azure.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-label">STEP 18/23 — CONNECT THE TOOLCHAIN</div>
+      <h3>Sign In to Azure from VS Code</h3>
+      <p>Authenticated the Azure Resources extension in VS Code, linking the editor to the subscription so the function can be deployed straight from the workspace.</p>
+      <div class="shot">
+        <img src="assets/img/ti-18-azure-signin.png" alt="VS Code Azure Resources extension requesting Microsoft sign-in">
+        <div class="cap">VS Code connected to the Azure subscription.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-label">STEP 19/23 — SHIP IT</div>
+      <h3>Deploy the Function to Azure</h3>
+      <p>Deployed the MISP2Sentinel function code to the MagnaMISP2Sentinel Function App directly from VS Code, confirming the overwrite prompt for the target app.</p>
+      <div class="shot">
+        <img src="assets/img/ti-19-deploy.png" alt="VS Code deployment confirmation dialog for deploying to the MagnaMISP2Sentinel function app">
+        <div class="cap">Function code deploying from VS Code to Azure.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-label">STEP 20/23 — FUNCTION LIVE</div>
+      <h3>Timer-Triggered Function Running</h3>
+      <p>The <strong>MISP2Sentinel</strong> function shows Enabled with a Timer trigger — the sync job now runs on a schedule with no manual steps. Last piece: giving it the configuration values it needs to talk to both ends of the pipeline.</p>
+      <div class="shot">
+        <img src="assets/img/ti-20-success.png" alt="Function App overview showing the MISP2Sentinel function enabled with a timer trigger">
+        <div class="cap">MISP2Sentinel deployed and enabled on a timer trigger.</div>
+      </div>
+    </div>
+
+    <!-- ==================== PHASE 5 ==================== -->
+    <p style="color:var(--amber); font-size:13px; letter-spacing:2px; margin:40px 0 26px;">// PHASE 5 — CONFIGURE &amp; VERIFY</p>
+
+    <div class="step">
+      <div class="step-label">STEP 21/23 — READ THE CONTRACT</div>
+      <h3>Identify the Values config.py Expects</h3>
+      <p>Reviewed the function's config to map out every value the ms_auth block pulls at runtime: tenant ID, client ID, client secret, workspace ID, subscription ID, resource group, and workspace name — plus the MISP API key on the other side.</p>
+      <div class="shot">
+        <img src="assets/img/ti-21-config-values.png" alt="config.py ms_auth block showing the tenant, client, secret, workspace, and subscription values the function requires">
+        <div class="cap">The ms_auth block — every runtime value the function resolves from its environment.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-label">STEP 22/23 — SECRETS OUT OF CODE</div>
+      <h3>Supply Them as Environment Variables</h3>
+      <p>Created application settings on the Function App for each required value — client_id, client_secret, mispkey, tenant_id, subscription_id, resource_group_name, workspace_id, workspace_name — so credentials live in the app's environment configuration rather than hardcoded in the deployed source.</p>
+      <div class="shot">
+        <img src="assets/img/ti-22-env-vars.png" alt="Function App environment variables page with all MISP2Sentinel settings populated and values hidden">
+        <div class="cap">All pipeline credentials injected as app settings, not committed to code.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-label">STEP 23/23 — PROOF OF LIFE</div>
+      <h3>241K Indicators Feeding Sentinel</h3>
+      <p>The result: Sentinel's Threat Intelligence blade shows <strong>241K indicators from 2 sources</strong> flowing into the workspace. This intel is now available to correlate against the live attack telemetry from the honeypot — the foundation for building analytics rules that alert when observed traffic matches known-bad indicators.</p>
+      <div class="shot">
+        <img src="assets/img/ti-23-indicators.png" alt="Microsoft Sentinel threat intelligence summary showing 241K TI indicators from 2 sources" style="max-width:420px;">
+        <div class="cap">Pipeline verified end-to-end: 241K threat intel indicators live in Sentinel.</div>
+      </div>
+    </div>
+
+  </section>
+
+  <a class="backlink" href="projects.html">&larr; cd ../projects</a>
+
+  <footer>
+    <span>&copy; 2026 Ben Magnavita</span>
+    <span><a href="mailto:Ben.magnavita@gmail.com">Ben.magnavita@gmail.com</a></span>
+    <span><a href="https://linkedin.com/in/benmagnavita" target="_blank" rel="noopener">LinkedIn</a></span>
+  </footer>
+
+</div>
+
+<script>
+  function tick() {
+    const d = new Date();
+    document.getElementById('clock').textContent =
+      d.toLocaleDateString('en-US', {month:'short', day:'2-digit'}) + ' ' +
+      d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', hour12:false});
+  }
+  tick(); setInterval(tick, 30000);
+</script>
+
+</body>
+</html>
