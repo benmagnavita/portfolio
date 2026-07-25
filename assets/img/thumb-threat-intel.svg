@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 360" role="img" aria-label="Threat Intelligence pipeline thumbnail">
+  <defs>
+    <pattern id="grid2" width="36" height="36" patternUnits="userSpaceOnUse">
+      <path d="M 36 0 L 0 0 0 36" fill="none" stroke="#1E2A36" stroke-width="1"/>
+    </pattern>
+    <radialGradient id="glow2" cx="80%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#58A6FF" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#58A6FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow3" cx="15%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#FFB454" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#FFB454" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- background -->
+  <rect width="720" height="360" fill="#0E141B"/>
+  <rect width="720" height="360" fill="url(#grid2)"/>
+  <rect width="720" height="360" fill="url(#glow2)"/>
+  <rect width="720" height="360" fill="url(#glow3)"/>
+
+  <!-- ====== MISP node (left) ====== -->
+  <g transform="translate(120,180)">
+    <rect x="-62" y="-52" width="124" height="104" rx="10" fill="#10161E" stroke="#FFB454" stroke-width="2"/>
+    <!-- database stack icon -->
+    <g stroke="#FFB454" stroke-width="2.5" fill="none">
+      <ellipse cx="0" cy="-22" rx="30" ry="10"/>
+      <path d="M -30 -22 L -30 4 A 30 10 0 0 0 30 4 L 30 -22"/>
+      <path d="M -30 -9 A 30 10 0 0 0 30 -9"/>
+    </g>
+    <text x="0" y="36" text-anchor="middle" font-family="'JetBrains Mono', Consolas, monospace" font-size="15" fill="#FFB454" letter-spacing="2">MISP</text>
+  </g>
+
+  <!-- ====== flow line ====== -->
+  <g stroke="#3DF07C" stroke-width="2" fill="none">
+    <path d="M 186 180 L 288 180" stroke-dasharray="7 7"/>
+    <path d="M 432 180 L 534 180" stroke-dasharray="7 7"/>
+  </g>
+  <!-- packets on the wire -->
+  <g fill="#3DF07C">
+    <rect x="216" y="174" width="12" height="12" rx="2"/>
+    <rect x="252" y="174" width="12" height="12" rx="2" opacity="0.6"/>
+    <rect x="462" y="174" width="12" height="12" rx="2"/>
+    <rect x="498" y="174" width="12" height="12" rx="2" opacity="0.6"/>
+  </g>
+  <!-- arrowheads -->
+  <path d="M 288 180 l -12 -7 v 14 Z" fill="#3DF07C"/>
+  <path d="M 534 180 l -12 -7 v 14 Z" fill="#3DF07C"/>
+
+  <!-- ====== Function node (center) ====== -->
+  <g transform="translate(360,180)">
+    <rect x="-62" y="-52" width="124" height="104" rx="10" fill="#10161E" stroke="#3DF07C" stroke-width="2"/>
+    <!-- lightning bolt -->
+    <path d="M 6 -34 L -18 4 L -2 4 L -8 32 L 18 -8 L 2 -8 Z" fill="#3DF07C"/>
+    <text x="0" y="40" text-anchor="middle" font-family="'JetBrains Mono', Consolas, monospace" font-size="12" fill="#3DF07C" letter-spacing="1">FUNCTION</text>
+    <!-- timer badge -->
+    <g transform="translate(46,-38)">
+      <circle r="14" fill="#0E141B" stroke="#7C8B99" stroke-width="2"/>
+      <line x1="0" y1="0" x2="0" y2="-7" stroke="#7C8B99" stroke-width="2"/>
+      <line x1="0" y1="0" x2="5" y2="3" stroke="#7C8B99" stroke-width="2"/>
+    </g>
+  </g>
+
+  <!-- ====== Sentinel node (right) ====== -->
+  <g transform="translate(600,180)">
+    <rect x="-62" y="-52" width="124" height="104" rx="10" fill="#10161E" stroke="#58A6FF" stroke-width="2"/>
+    <!-- shield -->
+    <path d="M 0 -36 L 26 -26 L 26 2 Q 26 22 0 34 Q -26 22 -26 2 L -26 -26 Z" fill="none" stroke="#58A6FF" stroke-width="2.5"/>
+    <path d="M -10 -2 L -3 6 L 12 -12" fill="none" stroke="#58A6FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="0" y="44" text-anchor="middle" font-family="'JetBrains Mono', Consolas, monospace" font-size="12" fill="#58A6FF" letter-spacing="1">SENTINEL</text>
+  </g>
+
+  <!-- corner brackets -->
+  <g stroke="#FFB454" stroke-width="2" fill="none" opacity="0.7">
+    <path d="M 22 40 L 22 22 L 40 22"/>
+    <path d="M 680 22 L 698 22 L 698 40"/>
+    <path d="M 698 320 L 698 338 L 680 338"/>
+    <path d="M 40 338 L 22 338 L 22 320"/>
+  </g>
+
+  <!-- labels -->
+  <text x="40" y="52" font-family="'JetBrains Mono', Consolas, monospace" font-size="17" fill="#FFB454" letter-spacing="2">&gt;_ THREAT_INTEL</text>
+  <text x="40" y="326" font-family="'JetBrains Mono', Consolas, monospace" font-size="13" fill="#7C8B99" letter-spacing="1">MISP &#8594; AZURE FUNCTION &#8594; SENTINEL // 241K INDICATORS</text>
+</svg>
