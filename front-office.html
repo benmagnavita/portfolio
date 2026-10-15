@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Front Office — Fantasy Football Platform | Ben Magnavita</title>
+<meta name="description" content="Front Office: a full-stack fantasy football platform engineered with Claude Code — spec-driven AI development, architecture decision records, Argon2id session auth, and 100+ automated tests.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="topbar-inner">
+    <span class="session">[ben@sec-portfolio]</span>
+    <a class="tab" href="index.html">0:resume</a>
+    <a class="tab active" href="projects.html">1:projects</a>
+    <span class="clock" id="clock"></span>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- ============ PROJECT HEADER ============ -->
+  <div class="term" style="margin-top:48px;">
+    <div class="term-head">
+      <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+      <span class="title">ben@raleigh: ~/projects/ai/front-office</span>
+    </div>
+    <div class="term-body">
+      <div class="line"><span class="prompt">ben@raleigh:~/projects/ai/front-office$</span> <span class="cmd">cat README.md</span></div>
+      <div class="hero-name" style="font-size:clamp(22px,4vw,32px);">Front Office — Fantasy Football Platform</div>
+      <div class="line out" style="margin-top:8px; max-width:75ch;">
+        A full-stack fantasy football platform I'm engineering with Claude Code as the build agent. I wrote the
+        product spec and own the architecture and security decisions; the agent implements each phase against a
+        written design doc, and a phase isn't done until tests, lint, type-checks and the build all pass.
+      </div>
+      <div class="line" style="margin-top:12px;">
+        <span class="out">stack:</span> <span class="cmd">Claude Code &middot; TypeScript &middot; Node.js &middot; Fastify &middot; React &middot; PostgreSQL &middot; Drizzle ORM &middot; Zod &middot; Vitest &middot; Docker</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ HOW IT'S BUILT ============ -->
+  <section class="section">
+    <div class="sec-cmd"><span class="prompt">ben@raleigh:<span class="path">~/projects/ai/front-office</span>$</span> <span class="cmd">cat workflow.md</span></div>
+    <ul class="spec">
+      <li><strong>Spec-driven AI development.</strong> One master product spec is written as a directive to the agent: scope, phases, constraints, and what not to build yet.</li>
+      <li><strong>Design before code.</strong> Every phase starts as a design doc, gets reviewed, then gets built. Where the build deviates from the plan, the doc records why.</li>
+      <li><strong>Architecture Decision Records.</strong> Datastore, audit log, authentication, data model and feed design are each an ADR with the options weighed and the trade-offs accepted.</li>
+      <li><strong>Verification gates.</strong> 100+ automated unit and integration tests run against a real PostgreSQL database, plus lint, strict type-checking and a full build on every phase.</li>
+      <li><strong>Agent guardrails.</strong> An early test run truncated the development database. Tests are now hard-pinned to an isolated database, so neither I nor the agent can wipe real data by running them.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SECURITY ============ -->
+  <section class="section">
+    <div class="sec-cmd"><span class="prompt">ben@raleigh:<span class="path">~/projects/ai/front-office</span>$</span> <span class="cmd">cat docs/adr/0003-self-hosted-session-auth.md</span></div>
+    <ul class="spec">
+      <li><strong>Self-hosted auth, no third-party identity SaaS.</strong> Chosen deliberately in an ADR: no external dependency, and the security correctness is ours to test.</li>
+      <li><strong>Argon2id password hashing</strong>, verified by tests that check the stored value is an Argon2id hash and never the plaintext.</li>
+      <li><strong>Opaque 256-bit session tokens.</strong> The browser holds the token in an <code>httpOnly</code>, <code>SameSite=Lax</code> cookie (<code>Secure</code> in production); the server stores only a SHA-256 hash, so a database leak doesn't hand out live sessions.</li>
+      <li><strong>Server-side expiry</strong> checked on every request, and request payloads validated against Zod schemas at the API boundary.</li>
+      <li><strong>Auditable data.</strong> NFL stat corrections are versioned with provenance instead of overwritten, so every score change leaves an audit trail.</li>
+    </ul>
+  </section>
+
+  <!-- ============ ARCHITECTURE ============ -->
+  <section class="section">
+    <div class="sec-cmd"><span class="prompt">ben@raleigh:<span class="path">~/projects/ai/front-office</span>$</span> <span class="cmd">tree -L 2</span></div>
+<pre class="tree">front-office/
+├── apps/
+│   ├── api/        <span class="c"># Fastify HTTP API, auth, scoring, analytics</span>
+│   ├── ingest/     <span class="c"># stats-feed adapters + reconciliation worker</span>
+│   └── web/        <span class="c"># React front end</span>
+├── packages/
+│   ├── domain/     <span class="c"># canonical data model, Zod schemas</span>
+│   ├── db/         <span class="c"># PostgreSQL schema + migrations (Drizzle)</span>
+│   ├── config/     <span class="c"># validated environment loading</span>
+│   └── observability/  <span class="c"># logging, metrics, correlation IDs</span>
+└── docs/
+    ├── adr/        <span class="c"># architecture decision records</span>
+    └── phase-*.md  <span class="c"># per-phase design docs</span></pre>
+  </section>
+
+  <!-- ============ SHIPPED ============ -->
+  <section class="section">
+    <div class="sec-cmd"><span class="prompt">ben@raleigh:<span class="path">~/projects/ai/front-office</span>$</span> <span class="cmd">git log --oneline --grep=Phase</span></div>
+    <ul class="spec">
+      <li><strong>League core:</strong> leagues and rosters, snake draft, weekly lineups, schedules, standings and playoffs.</li>
+      <li><strong>Scoring:</strong> fantasy points calculated from real NFL game data, including kicker and team-defense scoring.</li>
+      <li><strong>Transactions:</strong> waivers (priority and FAAB bidding), trades with counter-offers, commissioner review and veto.</li>
+      <li><strong>Community:</strong> in-app notifications, league chat, custom team logos.</li>
+      <li><strong>Analytics:</strong> a Value-Over-Replacement engine and a team analysis dashboard built on it.</li>
+    </ul>
+  </section>
+
+  <a class="backlink" href="projects.html">&larr; cd ../projects</a>
+
+  <footer>
+    <span>&copy; 2026 Ben Magnavita</span>
+    <span><a href="mailto:Ben.magnavita@gmail.com">Ben.magnavita@gmail.com</a></span>
+    <span><a href="https://linkedin.com/in/benmagnavita" target="_blank" rel="noopener">LinkedIn</a></span>
+  </footer>
+
+</div>
+
+<script>
+  function tick() {
+    const d = new Date();
+    document.getElementById('clock').textContent =
+      d.toLocaleDateString('en-US', {month:'short', day:'2-digit'}) + ' ' +
+      d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', hour12:false});
+  }
+  tick(); setInterval(tick, 30000);
+</script>
+
+</body>
+</html>

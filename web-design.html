@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BenSited — AI-Powered Web Design | Ben Magnavita</title>
+<meta name="description" content="BenSited: client websites engineered with Claude Code and shipped on Cloudflare Workers, hardened with Turnstile, rate limiting, server-side validation and upload sanitizing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="topbar-inner">
+    <span class="session">[ben@sec-portfolio]</span>
+    <a class="tab" href="index.html">0:resume</a>
+    <a class="tab active" href="projects.html">1:projects</a>
+    <span class="clock" id="clock"></span>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- ============ PROJECT HEADER ============ -->
+  <div class="term" style="margin-top:48px;">
+    <div class="term-head">
+      <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+      <span class="title">ben@raleigh: ~/projects/ai/bensited</span>
+    </div>
+    <div class="term-body">
+      <div class="line"><span class="prompt">ben@raleigh:~/projects/ai/bensited$</span> <span class="cmd">cat README.md</span></div>
+      <div class="hero-name" style="font-size:clamp(22px,4vw,32px);">BenSited — AI-Powered Web Design Studio</div>
+      <div class="line out" style="margin-top:8px; max-width:75ch;">
+        My web design business. Every site is engineered with Claude Code as the build agent and deployed
+        on Cloudflare's edge: custom design, 3D and motion work, contact and order forms, and hosting, with
+        security built into the forms from the start. Clients own their Cloudflare accounts, domains and data.
+      </div>
+      <div class="line" style="margin-top:12px;">
+        <span class="out">stack:</span> <span class="cmd">Claude Code &middot; Cloudflare Workers &middot; D1 &middot; Turnstile &middot; Cloudflare Access &middot; React &middot; three.js &middot; GSAP &middot; Playwright</span>
+      </div>
+      <div class="line" style="margin-top:6px;">
+        <span class="out">site:</span> <a href="https://bensited.com" target="_blank" rel="noopener">bensited.com</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ LIVE SITES ============ -->
+  <section class="section">
+    <div class="sec-cmd"><span class="prompt">ben@raleigh:<span class="path">~/projects/ai/bensited</span>$</span> <span class="cmd">ls ./live-sites</span></div>
+    <div class="gallery">
+      <a class="shot" href="https://strategicpsychotherapeutics.com" target="_blank" rel="noopener">
+        <img src="assets/img/web-stratpsych.webp" width="1200" height="800" loading="lazy" alt="StratPsych homepage hero: a glowing 3D brain behind the StratPsych wordmark">
+        <div class="cap"><strong>StratPsych</strong> &middot; online training for psychotherapists<span>strategicpsychotherapeutics.com</span></div>
+      </a>
+      <a class="shot" href="https://barbercollision.com" target="_blank" rel="noopener">
+        <img src="assets/img/web-barber-collision.webp" width="1200" height="800" loading="lazy" alt="Barber Collision homepage hero: a black truck in a lit paint booth under the Barber Collision logo">
+        <div class="cap"><strong>Barber Collision</strong> &middot; collision repair<span>barbercollision.com</span></div>
+      </a>
+      <a class="shot" href="https://itsbtidy.info" target="_blank" rel="noopener">
+        <img src="assets/img/web-btidy.webp" width="1200" height="800" loading="lazy" alt="BTIDY homepage hero: the ITSBTIDY wordmark over the comedian and his crew">
+        <div class="cap"><strong>BTIDY</strong> &middot; stand-up comedian<span>itsbtidy.info</span></div>
+      </a>
+      <a class="shot" href="https://artkr8tion.com" target="_blank" rel="noopener">
+        <img src="assets/img/web-artkr8tion.webp" width="1200" height="800" loading="lazy" alt="ArtKr8tion homepage hero: the headline Poured By Hand beside resin being poured">
+        <div class="cap"><strong>ArtKr8tion</strong> &middot; epoxy art + online shop<span>artkr8tion.com</span></div>
+      </a>
+      <a class="shot" href="https://lionettichemistrytutoring.com" target="_blank" rel="noopener">
+        <img src="assets/img/web-sondra-lionetti.webp" width="1200" height="800" loading="lazy" alt="Sondra Lionetti homepage hero: the headline Chemistry, explained until it clicks beside her portrait">
+        <div class="cap"><strong>Sondra Lionetti</strong> &middot; chemistry tutoring<span>lionettichemistrytutoring.com</span></div>
+      </a>
+      <a class="shot" href="https://ncengravingnsigns.com" target="_blank" rel="noopener">
+        <img src="assets/img/web-nc-engravings.webp" width="1200" height="800" loading="lazy" alt="North Carolina Engravings and Signs homepage hero: the round engraved logo on a wood background">
+        <div class="cap"><strong>NC Engravings &amp; Signs</strong> &middot; laser-cut signs<span>ncengravingnsigns.com</span></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ AI WORKFLOW ============ -->
+  <section class="section">
+    <div class="sec-cmd"><span class="prompt">ben@raleigh:<span class="path">~/projects/ai/bensited</span>$</span> <span class="cmd">cat ai-workflow.md</span></div>
+    <ul class="spec">
+      <li><strong>Agentic development with Claude Code.</strong> I direct the agent from brief to deploy: research the client, plan, build, screenshot-test on desktop and phone, fix, ship.</li>
+      <li><strong>Custom Claude skills.</strong> My design rules, build process and deployment runbook are packaged as reusable skills, so every build follows the same standards and checks.</li>
+      <li><strong>MCP tool integrations.</strong> The agent works directly with Cloudflare, GitHub and other services through the Model Context Protocol and CLIs, with access scoped to each job.</li>
+      <li><strong>Multi-agent orchestration.</strong> Parallel sub-agents handle research, builds and code review on larger jobs.</li>
+      <li><strong>Generative AI for media.</strong> AI image, video and 3D generation plus AI upscaling for hero visuals when a client's own photos run short.</li>
+      <li><strong>Automated QA.</strong> Playwright scripts screenshot every page at real device sizes and exercise the forms before anything goes live.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SECURITY ============ -->
+  <section class="section">
+    <div class="sec-cmd"><span class="prompt">ben@raleigh:<span class="path">~/projects/ai/bensited</span>$</span> <span class="cmd">cat security-baseline.md</span></div>
+    <p class="sec-lede">The controls I build into client forms and back ends:</p>
+    <ul class="spec">
+      <li><strong>Bot protection:</strong> Cloudflare Turnstile on contact forms, with the token verified server-side.</li>
+      <li><strong>Server-side validation:</strong> field allowlists and length caps enforced on the server. Browser limits like <code>maxlength</code> are treated as UX, never as a control.</li>
+      <li><strong>Upload sanitizing:</strong> uploaded photos are identified by their magic bytes, not their file name or declared type, then rebuilt server-side. That strips EXIF/GPS location data and any payload appended to the image (polyglot files), and files get server-assigned names.</li>
+      <li><strong>Rate limiting</strong> on form endpoints at the edge, using Cloudflare's Workers rate-limit binding.</li>
+      <li><strong>Zero Trust admin:</strong> my internal client CRM runs on Cloudflare Workers + D1 behind Cloudflare Access, and was probed from outside to confirm every path is locked.</li>
+      <li><strong>HTTPS everywhere</strong> with HSTS, on infrastructure the client owns.</li>
+    </ul>
+  </section>
+
+  <a class="backlink" href="projects.html">&larr; cd ../projects</a>
+
+  <footer>
+    <span>&copy; 2026 Ben Magnavita</span>
+    <span><a href="mailto:Ben.magnavita@gmail.com">Ben.magnavita@gmail.com</a></span>
+    <span><a href="https://linkedin.com/in/benmagnavita" target="_blank" rel="noopener">LinkedIn</a></span>
+  </footer>
+
+</div>
+
+<script>
+  function tick() {
+    const d = new Date();
+    document.getElementById('clock').textContent =
+      d.toLocaleDateString('en-US', {month:'short', day:'2-digit'}) + ' ' +
+      d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', hour12:false});
+  }
+  tick(); setInterval(tick, 30000);
+</script>
+
+</body>
+</html>

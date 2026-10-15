@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Projects — Ben Magnavita</title>
-<meta name="description" content="Security projects by Ben Magnavita — Azure SIEM honeypot lab with Microsoft Sentinel, and more in progress.">
+<meta name="description" content="Projects by Ben Magnavita — an Azure SIEM honeypot lab, MISP threat intel in Microsoft Sentinel, and software engineered with AI agents (Claude Code).">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -54,22 +54,44 @@
         </div>
       </a>
 
-      <!-- ================= PLACEHOLDER: NEXT PROJECT =================
-           TO ADD A NEW PROJECT:
-           1. Copy the <a class="card"> block above.
-           2. Point href at your new project page (copy siem-lab.html as a starting template).
-           3. Drop a thumbnail into assets/img/ and update the src + alt text.
-           4. Update the status, title, description, and stack tags.
-           5. Delete or keep this placeholder card below.
-           ============================================================= -->
-      <div class="card placeholder">
-        <div class="card-thumb-empty">// awaiting deployment</div>
+    </div>
+  </section>
+
+  <!-- ============ AI-ASSISTED ENGINEERING ============ -->
+  <section class="section">
+    <div class="sec-cmd"><span class="prompt">ben@raleigh:<span class="path">~/projects/ai</span>$</span> <span class="cmd">ls -la --sort=newest</span></div>
+    <p class="sec-lede">
+      Software I've engineered with AI agents. I write the spec, make the architecture and security calls,
+      and direct Claude Code through the build, the tests and the review &mdash; then ship it.
+    </p>
+
+    <div class="cards">
+
+      <!-- ================= PROJECT: WEB DESIGN STUDIO ================= -->
+      <a class="card" href="web-design.html">
+        <img class="card-thumb" src="assets/img/web-stratpsych.webp" alt="StratPsych homepage hero: a glowing 3D brain above the headline Making Psychotherapists Better">
         <div class="card-body">
-          <div class="card-status queued">[ QUEUED ]</div>
-          <h3>Next Project</h3>
-          <p>Currently in the works. Check back soon.</p>
+          <div class="card-status">[ LIVE ]</div>
+          <h3>BenSited &mdash; AI-Powered Web Design Studio</h3>
+          <p>Design, build and hosting for small businesses, engineered with Claude Code and shipped on Cloudflare &mdash; with bot protection, rate limiting and server-side upload sanitizing built into client forms.</p>
+          <div class="stack">
+            <span>Claude Code</span><span>Cloudflare Workers</span><span>Turnstile</span><span>three.js</span><span>Generative AI</span>
+          </div>
         </div>
-      </div>
+      </a>
+
+      <!-- ================= PROJECT: FRONT OFFICE ================= -->
+      <a class="card" href="front-office.html">
+        <img class="card-thumb" src="assets/img/thumb-front-office.svg" alt="Front Office graphic: a football play diagram beside a team value-over-replacement bar chart">
+        <div class="card-body">
+          <div class="card-status">[ IN DEVELOPMENT ]</div>
+          <h3>Front Office &mdash; Fantasy Football Platform</h3>
+          <p>A full-stack fantasy football platform built spec-first with Claude Code: drafts, trades, waivers, scoring from real NFL game data, an analytics engine, and self-hosted Argon2id auth.</p>
+          <div class="stack">
+            <span>Claude Code</span><span>TypeScript</span><span>PostgreSQL</span><span>React</span><span>Fastify</span>
+          </div>
+        </div>
+      </a>
 
     </div>
   </section>

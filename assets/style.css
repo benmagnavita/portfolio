@@ -125,7 +125,7 @@ a:focus-visible, button:focus-visible {
 .prompt { color: var(--green); font-weight: 500; }
 .cmd { color: var(--text); }
 .out { color: var(--dim); }
-.term-body .line { margin-bottom: 4px; white-space: pre-wrap; word-break: break-word; }
+.term-body .line { margin-bottom: 4px; white-space: normal; overflow-wrap: break-word; }
 
 .hero-name {
   font-size: clamp(26px, 5vw, 40px);
@@ -344,4 +344,41 @@ footer {
   display: flex;
   flex-wrap: wrap;
   gap: 8px 20px;
+}
+
+/* ---------- AI section: lede + website hero gallery ---------- */
+.sec-lede { font-size: 14px; color: var(--dim); max-width: 72ch; margin: -4px 0 20px; }
+
+.gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 860px) { .gallery { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 520px) { .gallery { grid-template-columns: 1fr; } }
+.gallery .shot { display: block; color: var(--text); transition: border-color 0.15s ease; }
+.gallery .shot:hover { border-color: var(--green); text-decoration: none; }
+.gallery .shot img { aspect-ratio: 3/2; object-fit: cover; height: auto; }
+.gallery .cap strong { color: #E8F0F7; font-weight: 500; }
+.gallery .cap span { display: block; color: var(--blue); font-size: 11.5px; }
+
+.spec { list-style: none; max-width: 72ch; }
+.spec li { padding-left: 20px; position: relative; margin-bottom: 8px; font-size: 14px; }
+.spec li::before { content: ">"; position: absolute; left: 0; color: var(--green); }
+.spec strong { color: #E8F0F7; font-weight: 500; }
+
+pre.tree {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 18px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text);
+  overflow-x: auto;
+  max-width: 72ch;
+}
+pre.tree .c { color: var(--dim); }
+.chip.ai { border-color: rgba(61,240,124,0.45); color: var(--green); }
+
+/* Phones: the tmux bar can't fit the session name, both tabs and the clock */
+@media (max-width: 520px) {
+  .topbar-inner { padding: 0 16px; }
+  .topbar .clock { display: none; }
 }

@@ -9,6 +9,9 @@ portfolio/
 ├── index.html        # Splash page (resume)
 ├── projects.html     # Projects grid
 ├── siem-lab.html     # Home SIEM Lab walkthrough
+├── threat-intel.html # MISP → Sentinel threat intel walkthrough
+├── front-office.html # AI-built fantasy football platform
+├── web-design.html   # BenSited web design work + live client heroes
 └── assets/
     ├── style.css     # Shared stylesheet (all theming lives here)
     └── img/          # Screenshots and thumbnails
